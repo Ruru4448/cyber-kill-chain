@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Kill Chain Visual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0f23, #1a1a3a);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #a0a0a0;
+        }
+
+        .kill-chain {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .phase {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .phase:hover::before {
+            left: 100%;
+        }
+
+        .phase:hover {
+            border-color: #4ecdc4;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .phase-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .phase-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .phase-content {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .phase.active .phase-content {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .description {
+            border-left-color: #45b7d1;
+        }
+
+        .examples {
+            border-left-color: #ffd93d;
+        }
+
+        .defenses {
+            border-left-color: #6bcf7f;
+        }
+
+        .content-section h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+        }
+
+        .chain-arrow {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 2em;
+            color: #4ecdc4;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .phase {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> CYBER KILL CHAIN </h1>
+            <p>Modelo de 7 fases para entender y defenderse contra ciberataques avanzados</p>
+            <p style="font-size: 0.9em; margin-top: 10px; color: #4ecdc4;">Haz clic en cada fase para ver detalles</p>
+        </div>
+
+        <div class="kill-chain">
+            <div class="phase" data-phase="1">
+                <div class="phase-header">
+                    <div class="phase-number">1</div>
+                    <div class="phase-title">RECONNAISSANCE</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>Los atacantes investigan y recopilan información sobre el objetivo, identificando vulnerabilidades y puntos de entrada potenciales.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Análisis de redes sociales</li>
+                                <li>Escaneo de puertos</li>
+                                <li>Búsqueda de empleados</li>
+                                <li>Análisis de DNS</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Limitar información pública</li>
+                                <li>Políticas de redes sociales</li>
+                                <li>Firewall configurado</li>
+                                <li>Educación de empleados</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="2">
+                <div class="phase-header">
+                    <div class="phase-number">2</div>
+                    <div class="phase-title">WEAPONIZATION</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>Creación del "arma" del ataque combinando malware con exploits específicos para las vulnerabilidades identificadas.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Documentos con macros maliciosas</li>
+                                <li>Archivos PDF infectados</li>
+                                <li>Troyanos personalizados</li>
+                                <li>Scripts maliciosos</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Análisis de amenazas</li>
+                                <li>Inteligencia de amenazas</li>
+                                <li>Firmas actualizadas</li>
+                                <li>Detección heurística</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="3">
+                <div class="phase-header">
+                    <div class="phase-number">3</div>
+                    <div class="phase-title">DELIVERY</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>El arma se transmite al objetivo a través de diversos vectores de ataque, siendo el email el más común.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Emails de phishing</li>
+                                <li>Sitios web comprometidos</li>
+                                <li>USB drops</li>
+                                <li>Supply chain attacks</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Filtros de email</li>
+                                <li>Políticas USB</li>
+                                <li>Educación de usuarios</li>
+                                <li>Análisis de archivos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="4">
+                <div class="phase-header">
+                    <div class="phase-number">4</div>
+                    <div class="phase-title">EXPLOTATION</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>Se ejecuta el código malicioso aprovechando vulnerabilidades en el sistema objetivo para obtener acceso inicial.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Buffer overflow</li>
+                                <li>SQL injection</li>
+                                <li>Exploits de navegador</li>
+                                <li>Macros de Office</li>
+                                <li>Vulnerabilidades de OS</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Parcheo regular</li>
+                                <li>DEP/ASLR habilitado</li>
+                                <li>Desactivar macros</li>
+                                <li>Sandboxing</li>
+                                <li>Application whitelisting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="5">
+                <div class="phase-header">
+                    <div class="phase-number">5</div>
+                    <div class="phase-title">INSTALLATION</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>El malware se instala de manera persistente en el sistema, estableciendo un punto de apoyo duradero.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Backdoors</li>
+                                <li>Servicios maliciosos</li>
+                                <li>Tareas programadas</li>
+                                <li>Registry modifications</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Antivirus/EDR</li>
+                                <li>Monitoreo de registry</li>
+                                <li>File integrity monitoring</li>
+                                <li>Process monitoring</li>
+                                <li>Boot security</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="6">
+                <div class="phase-header">
+                    <div class="phase-number">6</div>
+                    <div class="phase-title">COMMAND AND CONTROL (C2)</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>Se establece comunicación entre el sistema comprometido y la infraestructura del atacante para control remoto.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>HTTP/HTTPS beacons</li>
+                                <li>DNS tunneling</li>
+                                <li>IRC channels</li>
+                                <li>P2P networks</li>
+                                <li>Social media C2</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>Network monitoring</li>
+                                <li>DNS sinkholing</li>
+                                <li>Proxy filtering</li>
+                                <li>Behavioral analysis</li>
+                                <li>Threat intelligence feeds</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chain-arrow">⬇️</div>
+
+            <div class="phase" data-phase="7">
+                <div class="phase-header">
+                    <div class="phase-number">7</div>
+                    <div class="phase-title">ACTIONS ON OBJECTIVES</div>
+                </div>
+                <div class="phase-content">
+                    <div class="content-grid">
+                        <div class="content-section description">
+                            <h4>📋 Descripción</h4>
+                            <p>Los atacantes ejecutan sus objetivos finales, que pueden incluir robo de datos, sabotaje o cualquier propósito malicioso.</p>
+                        </div>
+                        <div class="content-section examples">
+                            <h4>⚡ Ejemplos de Ataque</h4>
+                            <ul>
+                                <li>Exfiltración de datos</li>
+                                <li>Ransomware</li>
+                                <li>Sabotaje de sistemas</li>
+                                <li>Espionaje industrial</li>
+                                <li>Movimiento lateral</li>
+                            </ul>
+                        </div>
+                        <div class="content-section defenses">
+                            <h4>🛡️ Defensas</h4>
+                            <ul>
+                                <li>DLP (Data Loss Prevention)</li>
+                                <li>Network segmentation</li>
+                                <li>Backup y recovery</li>
+                                <li>Incident response</li>
+                                <li>Forensic analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #45b7d1;"></div>
+                <span>Descripción</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffd93d;"></div>
+                <span>Ejemplos de Ataque</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #6bcf7f;"></div>
+                <span>Defensas</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phases = document.querySelectorAll('.phase');
+            
+            phases.forEach(phase => {
+                phase.addEventListener('click', function() {
+                    // Toggle active class
+                    this.classList.toggle('active');
+                    
+                    // Close other phases (optional - remove if you want multiple open)
+                    phases.forEach(otherPhase => {
+                        if (otherPhase !== this) {
+                            otherPhase.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // Auto-open first phase as example
+            setTimeout(() => {
+                phases[0].classList.add('active');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
